@@ -22,8 +22,8 @@ ENTRY(Reset_Handler)
 /* Specify the memory areas */
 MEMORY
 {
-   RAM (xrw) : ORIGIN = 0x20000000, LENGTH = 32K
-   ROM (rx)  : ORIGIN = 0x00000000, LENGTH = 64K
+   RAM (xrw) : ORIGIN = 0x20000000, LENGTH = 8K
+   ROM (rx)  : ORIGIN = 0x08000000, LENGTH = 64K
 }
 
 _estack = ORIGIN(RAM) + LENGTH(RAM);
@@ -31,7 +31,7 @@ _estack = ORIGIN(RAM) + LENGTH(RAM);
 /* Define output sections */
 SECTIONS
 {
-  /* The startup code goes first into FLASH */
+  /* The startup code goes first into ROM */
   .isr_vectors :
   {
     . = ALIGN(4);
@@ -56,6 +56,46 @@ SECTIONS
     . = ALIGN(4);
   } >ROM
 
+  .ARM.extab   : { *(.ARM.extab* .gnu.linkonce.armextab.*) } >ROM
+
+  . = ALIGN(4);
+
+  .ARM : {
+    __exidx_start = .;
+    *(.ARM.exidx*)
+    __exidx_end = .;
+  } >ROM
+
+  . = ALIGN(4);
+
+  .preinit_array :
+  {
+    PROVIDE_HIDDEN (__preinit_array_start = .);
+    KEEP (*(.preinit_array*))
+    PROVIDE_HIDDEN (__preinit_array_end = .);
+  } >ROM
+
+  . = ALIGN(4);
+
+  .init_array :
+  {
+    PROVIDE_HIDDEN (__init_array_start = .);
+    KEEP (*(SORT(.init_array.*)))
+    KEEP (*(.init_array*))
+    PROVIDE_HIDDEN (__init_array_end = .);
+  } >ROM
+
+  . = ALIGN(4);
+
+/*
+  .fini_array :
+  {
+    PROVIDE_HIDDEN (__fini_array_start = .);
+    KEEP (*(SORT(.fini_array.*)))
+    KEEP (*(.fini_array*))
+    PROVIDE_HIDDEN (__fini_array_end = .);
+  } >ROM
+*/
   _sidata = LOADADDR(.data);
 
   .data : 
@@ -89,6 +129,7 @@ SECTIONS
     libc.a ( * )
     libm.a ( * )
     libgcc.a ( * )
+    *(.fini_array*)
   }
 
   .ARM.attributes 0 : { *(.ARM.attributes) }

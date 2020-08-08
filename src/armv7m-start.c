@@ -19,6 +19,7 @@
 #include <ucmsis.h>
 
 extern int main(void);
+extern void __libc_init_array(void);
 
 extern uint32_t _sidata;
 extern uint32_t _sdata;
@@ -54,12 +55,17 @@ STATIC_INLINE void zero32(uint32_t *dst, const uint32_t *const end)
       *dst++ = 0;
 }
 
+void _init(void)
+{
+   SystemInit();
+}
+
 void Reset_Handler(void)
 {
-   __disable_interrupt();
+   __disable_irq();
    copy32(&_sdata, &_sidata, &_edata);
    zero32(&_sbss, &_ebss);
-   SystemInit();
+   __libc_init_array();
    main();
    for (;;) {
       __BKPT(0xaa);

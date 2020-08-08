@@ -257,14 +257,14 @@ STATIC_INLINE void __BKPT(uint8_t n)
    __asm__ volatile("bkpt %0" : : "i" (n & 0xFF));
 }
 
-STATIC_INLINE void __disable_interrupt(void)
+STATIC_INLINE void __disable_irq(void)
 {
-   __asm__ volatile("cpsid i");
+  __asm__ volatile ("cpsid i" : : : "memory");
 }
 
-STATIC_INLINE void __enable_interrupt(void)
+STATIC_INLINE void __enable_irq(void)
 {
-   __asm__ volatile("cpsie i");
+   __asm__ volatile("cpsie i" : : : "memory");
 }
 
 #ifdef __cplusplus

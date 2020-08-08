@@ -3,7 +3,7 @@ TARGET=elog-test
 DEFINES:=
 INCLUDES:=inc
 SRCDIR=src
-SPECS=nosys
+SPECS=nosys nano
 VERBOSE=n
 OPTIMIZE=g
 
@@ -12,6 +12,7 @@ DEST=out
 ARCH:=-mcpu=cortex-m3 -mthumb
 LDSCRIPTS:=armv7m-generic.ld
 LIBPATH:=lib
+LIB:=c m
 
 ################################################################
 
@@ -25,7 +26,7 @@ NMP=$(patsubst %.elf, %.nmp, $(ELF))
 CFLAGS:=$(ARCH)
 CFLAGS+=$(addprefix -I, $(INCLUDES))
 CFLAGS+=$(addprefix -D, $(DEFINES))
-CFLAGS+=-ffunction-sections -fdata-sections
+CFLAGS+=-ffunction-sections -fdata-sections -nostartfiles
 CFLAGS+=-O$(OPTIMIZE)
 CFLAGS+=-g3
 
@@ -43,8 +44,11 @@ LDFLAGS+=$(addprefix -l, $(LIBS))
 LDFLAGS+=$(addprefix -T, $(LDSCRIPTS))
 LDFLAGS+=$(addsuffix .specs, $(addprefix -specs=, $(SPECS)))
 LDFLAGS+=$(addprefix -Wl$(COMMA), $(LD_FLAGS))
+LDFLAGS+=-nostartfiles
 
-LSTSECTIONS:=.text .rodata .data .bss .isr_vectors
+LDSCRIPT_FILES:=$(foreach l, $(LDSCRIPTS), $(foreach L, $(LIBPATH), $(wildcard $(L)/$(l))))
+
+LSTSECTIONS:=$(foreach l, $(LDSCRIPT_FILES), $(strip $(shell cat $l | grep -E '\s\.\S+\s+\:' | cut -f 1 -d ':') ))
 LSTFLAGS:=-z -x -w -t -S $(addprefix -j, $(LSTSECTIONS))
 
 NMFLAGS:=-C -f sysv -S --size-sort -t dec
