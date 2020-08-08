@@ -34,3 +34,4 @@
 *.map
 *.lst
 *.nmp
+*.dep.mk

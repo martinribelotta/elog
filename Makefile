@@ -71,6 +71,7 @@ MD=mkdir -p
 all: $(ELF) $(BIN) $(HEX) $(LST) $(NMP)
 
 OBJS:=$(addprefix $(DEST)/, $(patsubst %.c, %.o, $(notdir $(CSRC))))
+DEPS:=$(addsuffix %.dep.mk, $(OBJS))
 
 $(DEST):
 	$(Q)$(MD) $@
@@ -79,7 +80,7 @@ define cc_rule
 
 $(DEST)/$(notdir $(patsubst %.c, %.o, $1)): $1 | $(DEST)
 	@echo CC $$<
-	$(Q)$(CC) -c $(CFLAGS) -o $$@ $$<
+	$(Q)$(CC) -MMD -MP -MF $$@.dep.mk -c $(CFLAGS) -o $$@ $$<
 
 endef
 
@@ -112,6 +113,10 @@ $(NMP): $(ELF)
 clean:
 	@echo CLEAN
 	$(Q)$(RM) $(DEST)
+
+%.d:
+%.h:
+-include $(DEPS)
 
 .PHONY: all clean
 .DEFAULT: all
