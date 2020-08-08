@@ -1,0 +1,28 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "make all",
+            "type": "shell",
+            "group": "build",
+            "problemMatcher": "$gcc",
+            "command": "make all"
+        },
+        {
+            "label": "rebuild all",
+            "type": "shell",
+            "group": "build",
+            "problemMatcher": "$gcc",
+            "command": "make clean all"
+        },
+        {
+            "label": "make clean",
+            "type": "shell",
+            "group": "build",
+            "problemMatcher": "$gcc",
+            "command": "make clean"
+        }
+    ]
+}
