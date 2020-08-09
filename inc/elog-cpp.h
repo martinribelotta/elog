@@ -77,7 +77,4 @@
   )
 #define _MAP() MAP
 
-#define _long_cast_apply(x) ((long) (x)),
-#define long_cast_apply(...) EVAL(MAP(_long_cast_apply, __VA_ARGS__))
-
 #endif /* __ELOG_CPP_H__ */

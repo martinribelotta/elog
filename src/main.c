@@ -6,10 +6,10 @@
 static elog_t *logger;
 static char arena[1024];
 
-static void log_to_semihost(elog_entry_t *e, void *ctx)
+static void log_to_semihost(elog_entry_t *e, int len, void *ctx)
 {
     int fd = *(int*) ctx;
-    write(fd, e, sizeof(elog_entry_t) + e->len * sizeof(long));
+    write(fd, e, len);
 }
 
 int main()
@@ -19,7 +19,7 @@ int main()
     ELOG(logger, "Hello world %d\n", 10);
     const char *const filename = "tmp.txt";
     int fd = open(filename, SYS_OPEN_WO);
-    ELOG(logger, "Open file %s with fd=%d\n", filename, fd);
+    ELOG(logger, "Open file with fd=%d\n", fd);
     if (fd != -1) {
         ELOG(logger, "Writing message to file\n");
         write(fd, b, sizeof(b));
