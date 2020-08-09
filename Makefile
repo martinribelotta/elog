@@ -22,6 +22,7 @@ BIN=$(patsubst %.elf, %.bin, $(ELF))
 HEX=$(patsubst %.elf, %.hex, $(ELF))
 LST=$(patsubst %.elf, %.lst, $(ELF))
 NMP=$(patsubst %.elf, %.nmp, $(ELF))
+BINLOG=$(DEST)/log_text.bin
 
 CFLAGS:=$(ARCH)
 CFLAGS+=$(addprefix -I, $(INCLUDES))
@@ -72,7 +73,7 @@ NM=$(CROSS)nm
 RM=rm -fr
 MD=mkdir -p
 
-all: $(ELF) $(BIN) $(HEX) $(LST) $(NMP)
+all: $(ELF) $(LST) $(NMP) $(BINLOG) $(BIN) $(HEX) 
 
 OBJS:=$(addprefix $(DEST)/, $(patsubst %.c, %.o, $(notdir $(CSRC))))
 DEPS:=$(addsuffix %.dep.mk, $(OBJS))
@@ -97,6 +98,12 @@ $(eval $(cc_rules))
 $(ELF): $(OBJ)
 	@echo LD $@
 	$(Q)$(LD) -o $@ $(LDFLAGS) $(OBJS)
+
+$(BINLOG): $(ELF)
+	@echo EXTRACT LOGS $@
+	$(Q)$(OCP) --dump-section .elog=$@ $<
+	@echo LOGS NOLOAD ELF $<
+	@$(OCP) --set-section-flags .elog=noload $<
 
 $(BIN): $(ELF)
 	@echo BIN $<

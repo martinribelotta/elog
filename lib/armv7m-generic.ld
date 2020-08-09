@@ -24,6 +24,7 @@ MEMORY
 {
    RAM (xrw) : ORIGIN = 0x20000000, LENGTH = 8K
    ROM (rx)  : ORIGIN = 0x08000000, LENGTH = 64K
+   LOG (r)   : ORIGIN = 0xF0000000, LENGTH = 1024M
 }
 
 _estack = ORIGIN(RAM) + LENGTH(RAM);
@@ -122,6 +123,12 @@ SECTIONS
     __end__ = .;
     end = .;
   } >RAM
+
+
+  .elog :
+  {
+    *(elog* elog.*)
+  } >LOG
 
   /* Remove information from the standard libraries */
   /DISCARD/ :
