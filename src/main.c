@@ -6,6 +6,12 @@
 static elog_t *logger;
 static char arena[1024];
 
+static void log_to_semihost(elog_entry_t *e, void *ctx)
+{
+    int fd = *(int*) ctx;
+    write(fd, e, sizeof(elog_entry_t) + e->len * sizeof(long));
+}
+
 int main()
 {
     static const char const b[] = "Hello world\n";
@@ -22,6 +28,13 @@ int main()
     } else {
         ELOG(logger, "Error opening archive\n");
         writestr("Error opening file");
+    }
+    int log_fd = open("bin.log", SYS_OPEN_WOB);
+    if (log_fd != -1) {
+        elog_flush(logger, log_to_semihost, &log_fd);
+        close(log_fd);
+    } else {
+        writestr("cannot open bin log for write");
     }
     return 0;
 }

@@ -33,12 +33,12 @@ typedef struct
     long data[0];
 } elog_entry_t;
 
-typedef void (elog_flush_func_t)(elog_entry_t *e);
+typedef void (elog_flush_func_t)(elog_entry_t *e, void *ctx);
 
 extern elog_t *elog_init(void *arena, size_t size);
 extern int elog_put(elog_t *log, const char *const msg, int n, long args[]);
 extern elog_entry_t *elog_peek(elog_t *log);
-extern void elog_flush(elog_t *log, elog_flush_func_t func);
+extern void elog_flush(elog_t *log, elog_flush_func_t func, void *ctx);
 
 #ifdef __cplusplus
 }

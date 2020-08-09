@@ -35,3 +35,6 @@
 *.lst
 *.nmp
 *.dep.mk
+
+# VSCode C debug
+.vscode/.cortex-debug.*.json
