@@ -2,16 +2,19 @@
 #define __ELOG_H__
 
 #include <stddef.h>
-#include <stdint.h>
 
 #include "elog-cpp.h"
+#include "elog-internal.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef uint32_t msgptr_t;
-typedef uint32_t msgparam_t;
+typedef struct {
+    ptrdiff_t buflen;
+    ptrdiff_t offset;
+    char buffer[0];
+} __attribute__((__packed__)) elog_t;
 
 #define _msgparam_cast_apply(x) ((long) (x)),
 #define msgparam_cast_apply(...) EVAL(MAP(_msgparam_cast_apply, __VA_ARGS__))
@@ -24,17 +27,6 @@ typedef uint32_t msgparam_t;
         elog_put(o, p_msg, 0, (msgparam_t[]){}); \
     ) \
 } while(0)
-
-typedef struct {
-    size_t buflen;
-    size_t offset;
-    char buffer[0];
-} elog_t;
-
-typedef struct {
-    msgptr_t msgid;
-    msgparam_t data[0];
-} elog_entry_t;
 
 typedef void (elog_flush_func_t)(elog_entry_t *e, int len, void *ctx);
 

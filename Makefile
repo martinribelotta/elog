@@ -14,6 +14,8 @@ LDSCRIPTS:=armv7m-generic.ld
 LIBPATH:=lib
 LIB:=c m
 
+ELOG_HEADER:=inc/elog-internal.h
+
 ################################################################
 
 ELF=$(addsuffix .elf, $(addprefix $(DEST)/, $(TARGET)))
@@ -73,7 +75,7 @@ NM=$(CROSS)nm
 RM=rm -fr
 MD=mkdir -p
 
-all: $(ELF) $(LST) $(NMP) $(BINLOG) $(BIN) $(HEX) 
+all: $(ELF) $(LST) $(NMP) $(BINLOG) $(BIN) $(HEX) build-decoder
 
 OBJS:=$(addprefix $(DEST)/, $(patsubst %.c, %.o, $(notdir $(CSRC))))
 DEPS:=$(addsuffix %.dep.mk, $(OBJS))
@@ -124,10 +126,14 @@ $(NMP): $(ELF)
 clean:
 	@echo CLEAN
 	$(Q)$(RM) $(DEST)
+	$(Q)$(MAKE) -C decoder clean
 
 %.d:
 %.h:
 -include $(DEPS)
 
-.PHONY: all clean
+build-decoder:
+	$(Q)$(MAKE) -C decoder ELOG_HEADER=$(dir $(realpath $(ELOG_HEADER)))
+
+.PHONY: all clean build-decoder
 .DEFAULT: all
