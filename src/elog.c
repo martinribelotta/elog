@@ -5,7 +5,7 @@
 elog_t *elog_init(void *arena, size_t size)
 {
     elog_t *ptr = (elog_t*) arena;
-    ptr->buflen = size;
+    ptr->buflen = size - sizeof(elog_t); // Adjust for the size of the elog_t structure
     ptr->offset = 0;
     return ptr;
 }
