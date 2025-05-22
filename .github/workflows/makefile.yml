@@ -14,6 +14,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: ryanwinter/arm-none-eabi-gcc@v2.0.4
+      with:
+        release: '10.3-2021.10' # The arm-none-eabi-gcc release to use.
 
     - name: Install dependencies
       run: make
